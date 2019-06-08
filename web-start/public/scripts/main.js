@@ -37,7 +37,7 @@ function initFirebaseAuth() {
 // Returns the signed-in user's profile Pic URL.
 function getProfilePicUrl() {
   // TODO 4: Return the user's profile pic URL.
-  firebase.auth().currentUser.photoURL || 'images/profile_placeholder.png';
+  return firebase.auth().currentUser.photoURL || '/images/profile_placeholder.png';
 }
 
 // Returns the signed-in user's display name.
@@ -49,12 +49,20 @@ function getUserName() {
 // Returns true if a user is signed-in.
 function isUserSignedIn() {
   // TODO 6: Return true if a user is signed-in.
-  return !!firebase.auth.currentUser;
+  return !!firebase.auth().currentUser;
 }
 
-// Saves a new message on the Firebase DB.
+// Saves a new message on the Cloud Firestore.
 function saveMessage(messageText) {
-  // TODO 7: Push a new message to Firebase.
+  // Add a new message entry to the Firebase database.
+  return firebase.firestore().collection('messages').add({
+    name: getUserName(),
+    text: messageText,
+    // profilePicUrl: getProfilePicUrl(),
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(error) {
+    console.error('Error writing new message to Firebase Database', error);
+  });
 }
 
 // Loads chat messages history and listens for upcoming ones.
